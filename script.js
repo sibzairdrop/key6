@@ -1,39 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
     const EVENTS_DELAY = 20000;
 
-const games = {
-    1: {
-        name: 'Riding Extreme 3D',
-        appToken: 'd28721be-fd2d-4b45-869e-9f253b554e50',
-        promoId: '43e35910-c168-4634-ad4f-52fd764a843f',
-    },
-    2: {
-        name: 'Chain Cube 2048',
-        appToken: 'd1690a07-3780-4068-810f-9b5bbf2931b2',
-        promoId: 'b4170868-cef0-424f-8eb9-be0622e8e8e3',
-    },
-    3: {
-        name: 'My Clone Army',
-        appToken: '74ee0b5b-775e-4bee-974f-63e7f4d5bacb',
-        promoId: 'fe693b26-b342-4159-8808-15e3ff7f8767',
-    },
-    4: {
-        name: 'Train Miner',
-        appToken: '82647f43-3f87-402d-88dd-09a90025313f',
-        promoId: 'c4480ac7-e178-4973-8061-9ed5b2e17954',
-    },
-    5: {
-        name: 'Merge Away',
-        appToken: '8d1cc2ad-e097-4b86-90ef-7a27e19fb833',
-        promoId: 'dc128d28-c45b-411c-98ff-ac7726fbaea4'
-    },
-    6: {  <!-- این بخش اضافه شد -->
-        name: 'Twerk Race 3D',
-        appToken: '61308365-9d16-4040-8bb0-2f4a4c69074c',
-        promoId: '61308365-9d16-4040-8bb0-2f4a4c69074c'
-    }
-};
-
+    const games = {
+        1: {
+            name: 'Riding Extreme 3D',
+            appToken: 'd28721be-fd2d-4b45-869e-9f253b554e50',
+            promoId: '43e35910-c168-4634-ad4f-52fd764a843f',
+        },
+        2: {
+            name: 'Chain Cube 2048',
+            appToken: 'd1690a07-3780-4068-810f-9b5bbf2931b2',
+            promoId: 'b4170868-cef0-424f-8eb9-be0622e8e8e3',
+        },
+        3: {
+            name: 'My Clone Army',
+            appToken: '74ee0b5b-775e-4bee-974f-63e7f4d5bacb',
+            promoId: 'fe693b26-b342-4159-8808-15e3ff7f8767',
+        },
+        4: {
+            name: 'Train Miner',
+            appToken: '82647f43-3f87-402d-88dd-09a90025313f',
+            promoId: 'c4480ac7-e178-4973-8061-9ed5b2e17954',
+        },
+        5: {
+            name: 'Merge Away',
+            appToken: '8d1cc2ad-e097-4b86-90ef-7a27e19fb833',
+            promoId: 'dc128d28-c45b-411c-98ff-ac7726fbaea4'
+        },
+        6: {  <!-- این بخش اضافه شد -->
+            name: 'Twerk Race 3D',
+            appToken: '61308365-9d16-4040-8bb0-2f4a4c69074c',
+            promoId: '61308365-9d16-4040-8bb0-2f4a4c69074c'
+        }
+    };
 
     const startBtn = document.getElementById('startBtn');
     const keyCountSelect = document.getElementById('keyCountSelect');
@@ -48,6 +47,7 @@ const games = {
     const generatedKeysTitle = document.getElementById('generatedKeysTitle');
     const gameSelect = document.getElementById('gameSelect');
     const copyStatus = document.getElementById('copyStatus');
+    const sourceCode = document.getElementById('sourceCode');
     const gameSelectGroup = document.getElementById('gameSelectGroup');
     const keyCountGroup = document.getElementById('keyCountGroup');
 
@@ -129,187 +129,111 @@ const games = {
                     <input type="text" value="${keys[0]}" readonly>
                     <button class="copyKeyBtn" data-key="${keys[0]}">Copy Key</button>
                 </div>`;
+        } else {
+            keysList.innerHTML = '<p>No keys generated. Please try again.</p>';
         }
 
         keyContainer.classList.remove('hidden');
         generatedKeysTitle.classList.remove('hidden');
+        startBtn.disabled = false;
+
         document.querySelectorAll('.copyKeyBtn').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const key = event.target.getAttribute('data-key');
-                
-                // Check if navigator.clipboard is available
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(key).then(() => {
-                        copyStatus.classList.remove('hidden');
-                        setTimeout(() => copyStatus.classList.add('hidden'), 2000);
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-                } else {
-                    // Fallback method for non-HTTPS environments
-                    const textArea = document.createElement('textarea');
-                    textArea.value = key;
-                    textArea.style.position = 'fixed';  // Avoid scrolling to bottom of page
-                    textArea.style.top = '0';
-                    textArea.style.left = '0';
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-
-                    try {
-                        const successful = document.execCommand('copy');
-                        const msg = successful ? 'successful' : 'unsuccessful';
-                        console.log('Fallback: Copying text command was ' + msg);
-                        if (successful) {
-                            copyStatus.classList.remove('hidden');
-                            setTimeout(() => copyStatus.classList.add('hidden'), 2000);
-                        }
-                    } catch (err) {
-                        console.error('Fallback: Oops, unable to copy', err);
-                    }
-
-                    document.body.removeChild(textArea);
-                }
+            button.addEventListener('click', () => {
+                copyToClipboard(button.dataset.key);
+                showCopyStatus();
             });
         });
-        copyAllBtn.addEventListener('click', () => {
-            const keysText = keys.filter(key => key).join('\n');
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(keysText).then(() => {
-                    copyStatus.classList.remove('hidden');
-                    setTimeout(() => copyStatus.classList.add('hidden'), 2000);
-                }).catch(err => {
-                    console.error('Failed to copy text: ', err);
-                });
-            } else {
-                const textArea = document.createElement('textarea');
-                textArea.value = keysText;
-                textArea.style.position = 'fixed';  // Avoid scrolling to bottom of page
-                textArea.style.top = '0';
-                textArea.style.left = '0';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-
-                try {
-                    const successful = document.execCommand('copy');
-                    const msg = successful ? 'successful' : 'unsuccessful';
-                    console.log('Fallback: Copying text command was ' + msg);
-                    if (successful) {
-                        copyStatus.classList.remove('hidden');
-                        setTimeout(() => copyStatus.classList.add('hidden'), 2000);
-                    }
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
-
-                document.body.removeChild(textArea);
-            }
-        });
-
-        progressBar.style.width = '100%';
-        progressText.innerText = '100%';
-        progressLog.innerText = 'Complete';
-
-        startBtn.classList.remove('hidden');
-        keyCountSelect.classList.remove('hidden');
-        gameSelect.classList.remove('hidden');
-        startBtn.disabled = false;
     });
-
-    document.getElementById('generateMoreBtn').addEventListener('click', () => {
-        progressContainer.classList.add('hidden');
-        keyContainer.classList.add('hidden');
-        startBtn.classList.remove('hidden');
-        keyCountSelect.classList.remove('hidden');
-        gameSelect.classList.remove('hidden');
-        generatedKeysTitle.classList.add('hidden');
-        copyAllBtn.classList.add('hidden');
-        keysList.innerHTML = '';
-        keyCountLabel.innerText = 'Number of keys:';
-        
-        // Show the form sections again
-        gameSelectGroup.style.display = 'block';
-        keyCountGroup.style.display = 'block';
-    });
-
-    const generateClientId = () => {
-        const timestamp = Date.now();
-        const randomNumbers = Array.from({ length: 19 }, () => Math.floor(Math.random() * 10)).join('');
-        return `${timestamp}-${randomNumbers}`;
-    };
 
     const login = async (clientId, appToken) => {
-        const response = await fetch('https://api.gamepromo.io/promo/login-client', {
+        const response = await fetch(`https://api.example.com/login`, {
             method: 'POST',
+            body: JSON.stringify({
+                client_id: clientId,
+                app_token: appToken
+            }),
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                appToken,
-                clientId,
-                clientOrigin: 'deviceid'
-            })
+            }
         });
-
         if (!response.ok) {
-            throw new Error('Failed to login');
+            throw new Error('Login failed');
         }
-
-        const data = await response.json();
-        return data.clientToken;
+        const { client_token } = await response.json();
+        return client_token;
     };
 
     const emulateProgress = async (clientToken, promoId) => {
-        const response = await fetch('https://api.gamepromo.io/promo/register-event', {
+        const response = await fetch(`https://api.example.com/emulate-progress`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${clientToken}`,
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({
-                promoId,
-                eventId: generateUUID(),
-                eventOrigin: 'undefined'
-            })
+                client_token: clientToken,
+                promo_id: promoId
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
-
         if (!response.ok) {
-            return false;
+            throw new Error('Emulation failed');
         }
-
-        const data = await response.json();
-        return data.hasCode;
+        const { has_code } = await response.json();
+        return has_code;
     };
 
     const generateKey = async (clientToken, promoId) => {
-        const response = await fetch('https://api.gamepromo.io/promo/create-code', {
+        const response = await fetch(`https://api.example.com/generate-key`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${clientToken}`,
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({
-                promoId
-            })
+                client_token: clientToken,
+                promo_id: promoId
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
-
         if (!response.ok) {
-            throw new Error('Failed to generate key');
+            throw new Error('Key generation failed');
         }
-
-        const data = await response.json();
-        return data.promoCode;
+        const { key } = await response.json();
+        return key;
     };
 
-    const generateUUID = () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    const generateClientId = () => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     };
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    const delayRandom = () => Math.random() / 3 + 1;
+    const delayRandom = () => 0.9 + Math.random() * 0.2;
+
+    const copyToClipboard = text => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    };
+
+    const showCopyStatus = () => {
+        copyStatus.classList.remove('hidden');
+        setTimeout(() => {
+            copyStatus.classList.add('hidden');
+        }, 2000);
+    };
+
+    copyAllBtn.addEventListener('click', () => {
+        const keys = Array.from(document.querySelectorAll('.key-item input')).map(input => input.value).join('\n');
+        copyToClipboard(keys);
+        showCopyStatus();
+    });
+
+    sourceCode.addEventListener('click', () => {
+        window.open('https://github.com/example/hamster-key-generator', '_blank');
+    });
 });
