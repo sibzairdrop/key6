@@ -1,0 +1,175 @@
+/* تم دارک برای صفحه */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #121212; /* رنگ پس‌زمینه تاریک */
+    color: #e0e0e0; /* رنگ متن روشن */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: #1e1e1e; /* رنگ پس‌زمینه کانتینر تاریک‌تر */
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* سایه تاریک‌تر */
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #ff9800; /* رنگ عنوان نارنجی */
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #e0e0e0; /* رنگ برچسب روشن‌تر */
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #333; /* رنگ حاشیه تیره‌تر */
+    border-radius: 8px;
+    background: #222; /* رنگ پس‌زمینه انتخاب‌گر تیره‌تر */
+    color: #e0e0e0; /* رنگ متن انتخاب‌گر روشن‌تر */
+    transition: border-color 0.3s;
+}
+
+select:focus {
+    border-color: #ff9800; /* رنگ حاشیه هنگام فوکوس نارنجی */
+}
+
+button {
+    background-color: #ff9800; /* رنگ دکمه نارنجی */
+    color: #1e1e1e; /* رنگ متن دکمه تیره‌تر */
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #e68900; /* رنگ روشن‌تر هنگام هاور */
+}
+
+.hidden {
+    display: none;
+}
+
+.progress-bar {
+    background-color: #333; /* رنگ پس‌زمینه نوار پیشرفت تاریک‌تر */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 25px;
+    height: 35px;
+    position: relative;
+}
+
+.progress-bar div {
+    height: 100%;
+    background-color: #ff9800; /* رنگ نوار پیشرفت نارنجی */
+    width: 0;
+    transition: width 0.5s;
+}
+
+#progressText {
+    margin-top: 15px;
+    font-weight: 600;
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.key-item input {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #555; /* رنگ حاشیه ورودی تیره‌تر */
+    border-radius: 8px;
+    margin-right: 12px;
+    background: #222; /* رنگ پس‌زمینه ورودی تیره‌تر */
+    color: #e0e0e0; /* رنگ متن ورودی روشن‌تر */
+}
+
+.copyKeyBtn {
+    background-color: #ff9800; /* رنگ دکمه کپی نارنجی */
+    border: none;
+    padding: 12px 20px;
+    color: #1e1e1e; /* رنگ متن دکمه کپی تیره‌تر */
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.copyKeyBtn:hover {
+    background-color: #e68900; /* رنگ روشن‌تر هنگام هاور */
+}
+
+.footer {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #777; /* رنگ متن فوتر روشن‌تر */
+}
+
+#copyStatus {
+    margin-top: 15px;
+    color: #ff9800; /* رنگ وضعیت کپی نارنجی */
+}
+
+/* استایل‌های جدید برای دکمه‌های اجتماعی */
+
+.social-btn {
+    display: inline-block;
+    background-color: #ff9800; /* رنگ دکمه‌های اجتماعی نارنجی */
+    color: #1e1e1e; /* رنگ متن دکمه‌های اجتماعی تیره‌تر */
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.social-btn:hover {
+    background-color: #e68900; /* رنگ روشن‌تر هنگام هاور */
+}
+
+#generateMoreBtn {
+    background-color: #ff9800; /* رنگ دکمه Generate More نارنجی */
+    color: #1e1e1e; /* رنگ متن دکمه Generate More تیره‌تر */
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+#generateMoreBtn:hover {
+    background-color: #e68900; /* رنگ روشن‌تر هنگام هاور */
+}
