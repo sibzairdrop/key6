@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const gameChoice = parseInt(selectedGame);
         const game = games[gameChoice];
 
+        // Hide the form sections
         document.querySelector('.grid-container').style.display = 'none';
         keyCountGroup.style.display = 'none';
 
@@ -177,8 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const successful = document.execCommand('copy');
                         const msg = successful ? 'successful' : 'unsuccessful';
                         console.log('Fallback: Copying text command was ' + msg);
-                        copyStatus.classList.remove('hidden');
-                        setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                        if (successful) {
+                            copyStatus.classList.remove('hidden');
+                            setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                        }
                     } catch (err) {
                         console.error('Fallback: Oops, unable to copy', err);
                     }
@@ -188,15 +191,84 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        generateMoreBtn.classList.remove('hidden');
+        copyAllBtn.addEventListener('click', () => {
+            const keysText = keys.filter(key => key).join('\n');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(keysText).then(() => {
+                    copyStatus.classList.remove('hidden');
+                    setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = keysText;
+                textArea.style.position = 'fixed';
+                textArea.style.top = '0';
+                textArea.style.left = '0';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    const msg = successful ? 'successful' : 'unsuccessful';
+                    console.log('Fallback: Copying text command was ' + msg);
+                    if (successful) {
+                        copyStatus.classList.remove('hidden');
+                        setTimeout(() => copyStatus.classList.add('hidden'), 2000);
+                    }
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+
+                document.body.removeChild(textArea);
+            }
+        });
+
+        generateMoreBtn.addEventListener('click', () => {
+            window.location.reload();
+        });
+
         startBtn.disabled = false;
     });
 
-    generateMoreBtn.addEventListener('click', () => {
-        keyCountGroup.classList.remove('hidden');
-        startBtn.classList.remove('hidden');
-        progressContainer.classList.add('hidden');
-        keyContainer.classList.add('hidden');
-        generateMoreBtn.classList.add('hidden');
-    });
+    function generateClientId() {
+        return 'client-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function login(clientId, appToken) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                // Simulate login
+                resolve('token-' + clientId);
+            }, 1000);
+        });
+    }
+
+    function emulateProgress(clientToken, promoId) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                // Simulate progress
+                resolve(Math.random() > 0.5);
+            }, 1000);
+        });
+    }
+
+    function generateKey(clientToken, promoId) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                // Simulate key generation
+                resolve('key-' + Math.random().toString(36).substr(2, 8));
+            }, 2000);
+        });
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function delayRandom() {
+        return Math.random() * 2 + 1; // Random delay between 1 and 3
+    }
 });
