@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const generatedKeysTitle = document.getElementById('generatedKeysTitle');
     const copyStatus = document.getElementById('copyStatus');
     const generateMoreBtn = document.getElementById('generateMoreBtn');
+    const sourceCode = document.getElementById('sourceCode');
 
     let selectedGame = null;
 
@@ -114,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return null;
             }
 
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 11; i++) {
                 await sleep(EVENTS_DELAY * delayRandom());
                 const hasCode = await emulateProgress(clientToken, game.promoId);
                 updateProgress(7 / keyCount, 'Emulating progress...');
@@ -190,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-
         copyAllBtn.addEventListener('click', () => {
             const keysText = keys.filter(key => key).join('\n');
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -226,49 +226,109 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        generateMoreBtn.addEventListener('click', () => {
-            window.location.reload();
-        });
+        progressBar.style.width = '100%';
+        progressText.innerText = '100%';
+        progressLog.innerText = 'Complete';
 
+        startBtn.classList.remove('hidden');
+        keyCountGroup.classList.remove('hidden');
+        document.querySelector('.grid-container').style.display = 'grid';
         startBtn.disabled = false;
     });
 
-    function generateClientId() {
-        return 'client-' + Math.random().toString(36).substr(2, 9);
-    }
+    generateMoreBtn.addEventListener('click', () => {
+        progressContainer.classList.add('hidden');
+        keyContainer.classList.add('hidden');
+        startBtn.classList.remove('hidden');
+        keyCountGroup.classList.remove('hidden');
+        document.querySelector('.grid-container').style.display = 'grid';
+        generatedKeysTitle.classList.add('hidden');
+        copyAllBtn.classList.add('hidden');
+        keysList.innerHTML = '';
+        keyCountLabel.innerText = 'Number of keys:';
+    });
 
-    function login(clientId, appToken) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // Simulate login
-                resolve('token-' + clientId);
-            }, 1000);
+    sourceCode.addEventListener('click', () => {
+        window.open('https://github.com/ShafiqSadat/HamsterKeyGenWeb', '_blank');
+    });
+
+    const generateClientId = () => {
+        const timestamp = Date.now();
+        const randomNumbers = Array.from({ length: 19 }, () => Math.floor(Math.random() * 10)).join('');
+        return `${timestamp}-${randomNumbers}`;
+    };
+
+    const login = async (clientId, appToken) => {
+        const response = await fetch('https://api.gamepromo.io/promo/login-client', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                appToken,
+                clientId,
+                clientOrigin: 'deviceid'
+            })
         });
-    }
 
-    function emulateProgress(clientToken, promoId) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Simulate progress
-                resolve(Math.random() > 0.5);
-            }, 1000);
+        if (!response.ok) {
+            throw new Error('Failed to login');
+        }
+
+        const data = await response.json();
+        return data.clientToken;
+    };
+
+    const emulateProgress = async (clientToken, promoId) => {
+        const response = await fetch('https://api.gamepromo.io/promo/register-event', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${clientToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                promoId,
+                eventId: generateUUID(),
+                eventOrigin: 'undefined'
+            })
         });
-    }
 
-    function generateKey(clientToken, promoId) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // Simulate key generation
-                resolve('key-' + Math.random().toString(36).substr(2, 8));
-            }, 2000);
+        if (!response.ok) {
+            return false;
+        }
+
+        const data = await response.json();
+        return data.hasCode;
+    };
+
+    const generateKey = async (clientToken, promoId) => {
+        const response = await fetch('https://api.gamepromo.io/promo/create-code', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${clientToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                promoId
+            })
         });
-    }
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+        if (!response.ok) {
+            throw new Error('Failed to generate key');
+        }
 
-    function delayRandom() {
-        return Math.random() * 2 + 1; // Random delay between 1 and 3
-    }
+        const data = await response.json();
+        return data.promoCode;
+    };
+
+    const generateUUID = () => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    const delayRandom = () => Math.random() / 3 + 1;
 });
